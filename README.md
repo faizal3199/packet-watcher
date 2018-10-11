@@ -1,2 +1,2 @@
-# firewall
+# Firewall
 Computer Networks project
