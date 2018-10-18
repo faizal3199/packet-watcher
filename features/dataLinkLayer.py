@@ -70,7 +70,7 @@ class dataLinkLayer(object):
         return regex_list
 
     def handler(self,packet):
-        """ handles a specific DNS query. Decides for blockage and log message. Returns True if blocked else False """
+        """ handles a specific dataLinkLayer query. Decides for blockage and log message. Returns True if blocked else False """
 
 
         hw_addr_src = packet.getlayer('Ether').src
