@@ -3,8 +3,10 @@ import re
 class dnsBlocker(object):
     BLOCKED_LIST = []
 
-    def __init__(self,block_list = []):
+    def __init__(self,block_list = [],logger=print):
         """ Class to handle the DNS queries """
+
+        self.logger = logger
 
         if type(block_list) == type(self.BLOCKED_LIST):
             self.BLOCKED_LIST = self.convert_list(block_list)
@@ -12,7 +14,7 @@ class dnsBlocker(object):
         else:
             raise TypeError("Got {} expected {}".format(type(block_list),type(self.BLOCKED_LIST)))
 
-        print(self.BLOCKED_LIST)
+        # self.logger(self.BLOCKED_LIST)
 
         return
 
@@ -46,16 +48,16 @@ class dnsBlocker(object):
         return regex_list
 
     def handler(self,packet):
-        """ handles a specific DNS query. Decides for blockage and prints message. Returns True if blocked else False """
+        """ handles a specific DNS query. Decides for blockage and self.loggers message. Returns True if blocked else False """
 
          # Check using flag's first bit. If 1 then response. If 0 the query
         if packet.getlayer('DNS').qr == 0:
             queried_domain = packet.getlayer('DNS').qd.qname.decode('utf-8')
 
-            print("Got DNS query: {}".format(queried_domain))
+            self.logger("Got DNS query: {}".format(queried_domain))
 
             if self.is_domain_blocked(queried_domain):
-                print('Found blocked domain: {}'.format(queried_domain))
+                self.logger('Found blocked domain: {}'.format(queried_domain))
                 return True
         return False
 
