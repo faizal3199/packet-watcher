@@ -2,6 +2,7 @@ from scapy.all import *
 import threading
 
 from features.dnsBlocker import *
+from features.dataLinkLayer import *
 
 #-- Start service handlers fucntion
 
@@ -36,9 +37,15 @@ def handle_dns(packet):
         return True
     return False
 
+def handle_datalink(packet):
+    if packet.haslayer('Ether'):
+        dataLinkLayerObj.handler(packet)
+        return True
+    return False
+
 ## Unit handlers ends
 
-handlers = [handle_dns]
+handlers = [handle_dns,handle_datalink]
 #-- End packet handlers fucntion
 
 if __name__ == "__main__":
