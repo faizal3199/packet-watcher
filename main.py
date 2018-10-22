@@ -4,6 +4,7 @@ import threading
 from features.dnsBlocker import dnsBlockerObj
 from features.dataLinkLayer import dataLinkLayerObj
 from features.networkLayer import networkLayerObj
+from features.transportLayer import transportLayerObj
 
 #-- Start service handlers fucntion
 
@@ -50,9 +51,14 @@ def handle_networklayer(packet):
         return True
     return False
 
+def handle_transportlayer(packet):
+    if packet.haslayer('IP'):
+        transportLayerObj.handler(packet)
+        return True
+    return False
 ## Unit handlers ends
 
-handlers = [handle_dns,handle_datalink,handle_networklayer]
+handlers = [handle_dns,handle_datalink,handle_networklayer,handle_transportlayer]
 #-- End packet handlers fucntion
 
 if __name__ == "__main__":

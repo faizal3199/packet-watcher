@@ -88,5 +88,5 @@ class networkLayer(object):
 
 # For testing purpose
 # Intialize own object and provide it to global space
-TEST_LIST = [(0,'BLOCK','tcp')]
+TEST_LIST = [(0,'BLOCK','icmp')]
 networkLayerObj = networkLayer(TEST_LIST)

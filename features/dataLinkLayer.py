@@ -98,5 +98,5 @@ class dataLinkLayer(object):
 
 # For testing purpose
 # Intialize own object and provide it to global space
-TEST_LIST = [(0,'BLOCK','docker0','*')]
+TEST_LIST = [(0,'BLOCK','docker0','172.17.0.3')]
 dataLinkLayerObj = dataLinkLayer(TEST_LIST)

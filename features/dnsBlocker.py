@@ -54,7 +54,7 @@ class dnsBlocker(object):
         if packet.getlayer('DNS').qr == 0:
             queried_domain = packet.getlayer('DNS').qd.qname.decode('utf-8')
 
-            self.logger("Got DNS query: {}".format(queried_domain))
+            # self.logger("Got DNS query: {}".format(queried_domain))
 
             if self.is_domain_blocked(queried_domain):
                 self.logger('Found blocked domain: {}'.format(queried_domain))
