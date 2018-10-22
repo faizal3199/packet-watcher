@@ -72,10 +72,10 @@ class userHandler(object):
 
     def handle_user_input(self,args):
         """ Handles user message and communicates rules """
-        import ipcAPI
+        import ipcAPI,config
 
         message = self.get_message(args)
-        client = ipcAPI.ipcClient('/tmp/firewall.socket')
+        client = ipcAPI.ipcClient(config.SOCKET_FILE)
 
         client.send_data(message)
 

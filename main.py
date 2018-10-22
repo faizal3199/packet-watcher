@@ -1,17 +1,51 @@
-import sys
+import sys,os
 from userHandler import userHandler
+import config,ipcAPI
 
-print('Firewall version 0.1')
+def handle_service(args):
+    if len(args) < 1:
+        print("Usage:")
+        print("service [start|stop]")
+        exit(1)
+    
+    if args[0] == 'start':
+        if os.path.exists(config.PID_FILE):
+            print("The service is already running. Check PID file at {}".format(config.PID_FILE))
+            exit(1)
+        else:
+            import service
+            service.main()
+    elif args[0] == "stop":
+        if not os.path.exists(config.PID_FILE):
+            print("The service is not running. Check PID file at {}".format(config.PID_FILE))
+            exit(1)
+        else:
+            client = ipcAPI.ipcClient(config.SOCKET_FILE)
+            client.send_data({'feature':'service','args':('stop')})
 
-args = sys.argv[1:]
-userHandlerObj = userHandler()
+            resp = client.recv_data()
+            print("{} : {}".format(resp['status'],resp['message']))
+    else:
+        print("Usage:")
+        print("service [start|stop]")
+        exit(1)
 
-if len(args) < 1 :
-    userHandlerObj.print_help("Insufficient number of arguments")
-    print('service [start|stop]')
-    exit(1)
+if __name__=='__main__':
+    print('{} {}'.format(config.APP_NAME,config.APP_VERSION))
 
-if args[0] == 'service':
-    print('Service handlers to be implemented')
-else:
-    userHandlerObj.handle_user_input(args)
+    args = sys.argv[1:]
+    userHandlerObj = userHandler()
+
+    if len(args) < 1 :
+        userHandlerObj.print_help("Insufficient number of arguments")
+        print('service [start|stop]')
+        exit(1)
+
+    if os.getuid() != 0:
+        print("Tool requires root access to run. Please provide root access")
+        exit(1)
+
+    if args[0] == 'service':
+        handle_service(args[1:])
+    else:
+        userHandlerObj.handle_user_input(args)
