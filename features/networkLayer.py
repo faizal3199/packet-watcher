@@ -1,5 +1,3 @@
-import re
-
 class networkLayer(object):
     RULE_LIST = []
 
@@ -75,7 +73,7 @@ class networkLayer(object):
         return False
 
     def is_blocked(self,proto_number):
-        """ Performs regex check against a combination. True if blocked """
+        """ Performs check against a protocol. True if blocked """
         # RULE_LIST: (time,status,protocol)
         #               0   1       2
         length = len(self.RULE_LIST)
