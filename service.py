@@ -61,7 +61,7 @@ def handle_transportlayer(packet):
 handlers = [handle_dns,handle_datalink,handle_networklayer,handle_transportlayer]
 #-- End packet handlers fucntion
 
-if __name__ == "__main__":
+def main():
     print("Starting service...")
 
     start_services()
@@ -71,3 +71,6 @@ if __name__ == "__main__":
     except Exception as e:
         print(e)
     print("Exiting...")
+
+if __name__ == "__main__":
+    main()
