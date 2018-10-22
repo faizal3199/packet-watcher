@@ -1,7 +1,8 @@
-import sys
-
 class userHandler(object):
+    """ Handels user queries related to features """
+
     def __init__(self):
+        """ Sets help message """
         self.help_message = {
             'dataLinkLayer':"[ALLOW|BLOCK] [srcMAC|ifname] [dstMAC|ifname]",
             'networkLayer':"[ALLOW|BLOCK] [tarsport-layer-protocol]",
@@ -11,6 +12,7 @@ class userHandler(object):
         return
 
     def datalink_args(self,args):
+        """ Handler for dataLinkLayer """
         if len(args) != 3:
             self.print_help(msg="Invalid number of arguments",category="dataLinkLayer")
             exit(1)
@@ -18,6 +20,7 @@ class userHandler(object):
         return tuple(args)
 
     def networklayer_args(self,args):
+        """ Handler for networkLayer """
         if len(args) != 2:
             self.print_help(msg="Invalid number of arguments",category="networkLayer")
             exit(1)
@@ -25,6 +28,7 @@ class userHandler(object):
         return tuple(args)
 
     def transportlayer_args(self,args):
+        """ Handler for transportLayer """
         if len(args) != 5:
             self.print_help(msg="Invalid number of arguments",category="transportLayer")
             exit(1)
@@ -32,6 +36,7 @@ class userHandler(object):
         return tuple(args)
 
     def dnsblocker_args(self,args):
+        """ Handler for dnsBlocker """
         if len(args) != 2:
             self.print_help(msg="Invalid number of arguments",category="dnsBlocker")
             exit(1)
@@ -39,6 +44,7 @@ class userHandler(object):
         return tuple(args)
 
     def get_message(self,args):
+        """ Returns parsed message """
         if len(args) < 1:
             self.print_help(msg="Insufficient number of arguments")
             exit(1)
@@ -64,7 +70,24 @@ class userHandler(object):
 
         return message
 
+    def handle_user_input(self,args):
+        """ Handles user message and communicates rules """
+        import ipcAPI
+
+        message = self.get_message(args)
+        client = ipcAPI.ipcClient('/tmp/firewall.socket')
+
+        client.send_data(message)
+
+        resp = client.recv_data()
+
+        print("{} : {}".format(resp['status'],resp['message']))
+
+        return True
+
+
     def print_help(self,msg=None,category='all'):
+        """ print help message for any category """
         if msg:
             print("Error: {}\n".format(msg))
 
@@ -76,5 +99,6 @@ class userHandler(object):
             print("{} {}".format(category,self.help_message[category]))
 
 if __name__ == '__main__':
+    import sys
     hanlderObj = userHandler()
     print(hanlderObj.get_message(sys.argv[1:]))

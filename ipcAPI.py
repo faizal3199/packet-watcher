@@ -7,12 +7,12 @@ class baseIpcClass(object):
     def encode(self,obj):
         """ encode to a string. obj should be json serializable """
         import yaml
-        return yaml.dump(obj)
+        return bytes(yaml.dump(obj),'utf-8')
 
     def decode(self,data):
         """ decode data to json object """
         import yaml
-        return yaml.load(data)
+        return yaml.load(data.decode('utf-8'))
 
     def send_data(self,data):
         """ Sends data to the sockObj """
