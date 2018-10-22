@@ -1,32 +1,14 @@
 import re
+from .baseClass import baseClass # .baseClass for denoting same directory
 
-class dnsBlocker(object):
-    BLOCKED_LIST = []
+class dnsBlocker(baseClass):
+    def __init__(self,rule_list = [],logger=print):
+        """ Class to handle the DNS queries.
+        rule_list should be a list of three tuple (time,'ALLOW|BLOCK',domain)"""
 
-    def __init__(self,block_list = [],logger=print):
-        """ Class to handle the DNS queries """
-
-        self.logger = logger
-
-        if type(block_list) == type(self.BLOCKED_LIST):
-            self.BLOCKED_LIST = self.convert_list(block_list)
-            self.BLOCKED_LIST.sort()
-        else:
-            raise TypeError("Got {} expected {}".format(type(block_list),type(self.BLOCKED_LIST)))
-
-        # self.logger(self.BLOCKED_LIST)
+        super().__init__(rule_list,logger)
 
         return
-
-    def update_list(self,new_list):
-        """ Updates current block list with new passed one. new_list should be a list of three tuple (time,'ALLOW|BLOCK',domain) """
-        if type(new_list) == type(self.BLOCKED_LIST):
-            self.BLOCKED_LIST = self.convert_list(new_list)
-            self.BLOCKED_LIST.sort()
-            return True
-        else:
-            raise TypeError("Got {} expected {}".format(type(new_list),type(self.BLOCKED_LIST)))
-            return False
 
     def convert_list(self,new_list):
         """ Convert the passed list into a regex list """
@@ -56,22 +38,22 @@ class dnsBlocker(object):
 
             # self.logger("Got DNS query: {}".format(queried_domain))
 
-            if self.is_domain_blocked(queried_domain):
+            if self.is_blocked(queried_domain):
                 self.logger('Found blocked domain: {}'.format(queried_domain))
                 return True
         return False
 
-    def is_domain_blocked(self,domain):
+    def is_blocked(self,domain):
         """ Performs regex check against a domain. True if blocked """
 
         # As the list gets sorted when saved. The last entry will be the final answer decider
 
-        # BLOCKED_LIST: (time,status,domain)
-        length = len(self.BLOCKED_LIST)
+        # RULE_LIST: (time,status,domain)
+        length = len(self.RULE_LIST)
 
         for index in range(0,length):
-            if re.match(self.BLOCKED_LIST[length-1-index][2], domain, re.I|re.M) != None: # Domain is present in our list
-                if self.BLOCKED_LIST[length-1-index][1] == 'BLOCK':
+            if re.match(self.RULE_LIST[length-1-index][2], domain, re.I|re.M) != None: # Domain is present in our list
+                if self.RULE_LIST[length-1-index][1] == 'BLOCK':
                     return True
                 else: # Latest entry allows to pass it
                     return False

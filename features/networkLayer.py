@@ -1,19 +1,13 @@
-class networkLayer(object):
-    RULE_LIST = []
+from .baseClass import baseClass # .baseClass for denoting same directory
 
+class networkLayer(baseClass):
     def __init__(self,rule_list = [],logger=print):
-        """ Class to handle the networkLayer queries """
+        """ Class to handle the networkLayer queries.
+        rule_list should be a list of tuple (time,'ALLOW|BLOCK',protocol) """
 
         self.populate_table()
 
-        self.logger = logger
-        if type(rule_list) == type(self.RULE_LIST):
-            self.RULE_LIST = self.convert_list(rule_list)
-            self.RULE_LIST.sort()
-        else:
-            raise TypeError("Got {} expected {}".format(type(rule_list),type(self.RULE_LIST)))
-
-        # self.logger(self.RULE_LIST)
+        super().__init__(rule_list,logger)
 
         return
 
@@ -33,16 +27,6 @@ class networkLayer(object):
             if num == proto_number:
                 return name
         return "UNKNOWN"
-
-    def update_list(self,new_list):
-        """ Updates current rule list with new passed one. new_list should be a list of tuple (time,'ALLOW|BLOCK',protocol) """
-        if type(new_list) == type(self.RULE_LIST):
-            self.RULE_LIST = self.convert_list(new_list)
-            self.RULE_LIST.sort()
-            return True
-        else:
-            raise TypeError("Got {} expected {}".format(type(new_list),type(self.RULE_LIST)))
-            return False
 
     def convert_list(self,new_list):
         """ Convert the passed list into a regex list """

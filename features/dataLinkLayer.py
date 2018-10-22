@@ -1,19 +1,12 @@
 import re
+from .baseClass import baseClass # .baseClass for denoting same directory
 
-class dataLinkLayer(object):
-    RULE_LIST = []
-
+class dataLinkLayer(baseClass):
     def __init__(self,rule_list = [],logger=print):
-        """ Class to handle the dalaLinkLayer queries """
+        """ Class to handle the dalaLinkLayer queries.
+        rule_list should be a list of tuple (time,'ALLOW|BLOCK',srcMAC|ifname,dstMAC|ifname) """
 
-        self.logger = logger
-        if type(rule_list) == type(self.RULE_LIST):
-            self.RULE_LIST = self.convert_list(rule_list)
-            self.RULE_LIST.sort()
-        else:
-            raise TypeError("Got {} expected {}".format(type(rule_list),type(self.RULE_LIST)))
-
-        # self.logger(self.RULE_LIST)
+        super().__init__(rule_list,logger)
 
         return
 
@@ -29,16 +22,6 @@ class dataLinkLayer(object):
             return None
 
         return ':'.join(['%02x' % char for char in info[18:24]])
-
-    def update_list(self,new_list):
-        """ Updates current rule list with new passed one. new_list should be a list of tuple (time,'ALLOW|BLOCK',srcMAC|ifname,dstMAC|ifname) """
-        if type(new_list) == type(self.RULE_LIST):
-            self.RULE_LIST = self.convert_list(new_list)
-            self.RULE_LIST.sort()
-            return True
-        else:
-            raise TypeError("Got {} expected {}".format(type(new_list),type(self.RULE_LIST)))
-            return False
 
     def convert_list(self,new_list):
         """ Convert the passed list into a regex list """
@@ -71,7 +54,6 @@ class dataLinkLayer(object):
 
     def handler(self,packet):
         """ handles a specific dataLinkLayer query. Decides for blockage and log message. Returns True if blocked else False """
-
 
         hw_addr_src = packet.getlayer('Ether').src
         hw_addr_dst = packet.getlayer('Ether').dst

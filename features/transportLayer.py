@@ -1,20 +1,12 @@
 import re
+from .baseClass import baseClass # .baseClass for denoting same directory
 
-class transportLayer(object):
-    RULE_LIST = []
+class transportLayer(baseClass):
+    def __init__(self,rule_list = [],logger=print):
+        """ Class to handle the transportLayer queries.
+        rule_list should be a list of three tuple (time,'ALLOW|BLOCK',srcIP,srcPort,dstIP,dstPort) """
 
-    def __init__(self,block_list = [],logger=print):
-        """ Class to handle the transportLayer queries """
-
-        self.logger = logger
-
-        if type(block_list) == type(self.RULE_LIST):
-            self.RULE_LIST = self.convert_list(block_list)
-            self.RULE_LIST.sort()
-        else:
-            raise TypeError("Got {} expected {}".format(type(block_list),type(self.RULE_LIST)))
-
-        # self.logger(self.RULE_LIST)
+        super().__init__(rule_list,logger)
 
         return
 
@@ -35,16 +27,6 @@ class transportLayer(object):
             return socket.getservbyname(port).upper()
         except:
             return "UNKOWN"
-
-    def update_list(self,new_list):
-        """ Updates current block list with new passed one. new_list should be a list of three tuple (time,'ALLOW|BLOCK',srcIP,srcPort,dstIP,dstPort) """
-        if type(new_list) == type(self.RULE_LIST):
-            self.RULE_LIST = self.convert_list(new_list)
-            self.RULE_LIST.sort()
-            return True
-        else:
-            raise TypeError("Got {} expected {}".format(type(new_list),type(self.RULE_LIST)))
-            return False
 
     def convert_list(self,new_list):
         """ Convert the passed list into a regex list """
@@ -87,13 +69,18 @@ class transportLayer(object):
 
         packet = packet.getlayer('IP')
 
-        srcip = packet.src
-        srcport = str(packet.sport)
-        dstip = packet.dst
-        dstport = str(packet.dport)
+        try:
+            srcip = packet.src
+            srcport = str(packet.sport)
+            dstip = packet.dst
+            dstport = str(packet.dport)
+        except AttributeError as e:
+            # No port found for the packet
+            return False
+
 
         if self.is_blocked(srcip,srcport,dstip,dstport):
-            message = "Found blocked combination: "
+            message = "Found blocked port and IP combination: "
             message += "{}:{} to {}:{}".format(srcip,srcport,dstip,dstport)
             self.logger(message)
             return True
