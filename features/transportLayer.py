@@ -24,7 +24,7 @@ class transportLayer(baseClass):
         import socket
         port = int(port)
         try:
-            return socket.getservbyname(port).upper()
+            return socket.getservbyport(port).upper()
         except:
             return "UNKOWN"
 
@@ -58,7 +58,7 @@ class transportLayer(baseClass):
                 entry_srcport =  port_to_regex(entry_srcport)
                 entry_dstport =  port_to_regex(entry_dstport)
             except:
-                raise BaseException("Service name used is not found in general list. Please check")
+                raise BaseException("Service name used is not found in general list. Please check list provided by 'socket.getservbyname'")
 
             regex_list.append((entry_time,entry_status,entry_srcip,entry_srcport,entry_dstip,entry_dstport))
 
@@ -81,6 +81,11 @@ class transportLayer(baseClass):
 
         if self.is_blocked(srcip,srcport,dstip,dstport):
             message = "Found blocked port and IP combination: "
+
+            # convert to known name if possobile
+            srcport = self.get_service_by_port(srcport) if self.get_service_by_port(srcport) != 'UNKOWN' else srcport
+            dstport = self.get_service_by_port(dstport) if self.get_service_by_port(dstport) != 'UNKOWN' else dstport
+
             message += "{}:{} to {}:{}".format(srcip,srcport,dstip,dstport)
             self.logger(message)
             return True
@@ -115,5 +120,5 @@ class transportLayer(baseClass):
 
 # For testing purpose
 # Intialize own object and provide it to global space
-TEST_LIST = [(0,'BLOCK','*','*','172.17.0.2','80')]
+TEST_LIST = [(0,'BLOCK','*','*','172.17.0.2','Domain')]
 transportLayerObj = transportLayer(TEST_LIST)
