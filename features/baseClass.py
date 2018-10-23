@@ -6,12 +6,12 @@ class baseClass(object):
 
         self.logger = logger
 
-        if type(block_list) == type(self.RULE_LIST):
-            self.RULE_LIST = self.convert_list(block_list)
-            self.RULE_LIST.sort()
-            self.RULE_LIST.reverse()
-        else:
+        if type(block_list) != type(self.RULE_LIST):
             raise TypeError("Got {} expected {}".format(type(block_list),type(self.RULE_LIST)))
+        
+        self.RULE_LIST = self.convert_list(block_list)
+        self.RULE_LIST.sort()
+        self.RULE_LIST.reverse()
 
         # self.logger(self.RULE_LIST)
 

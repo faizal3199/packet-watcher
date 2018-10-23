@@ -33,12 +33,17 @@ class networkLayer(baseClass):
         regex_list = []
 
         for entry_time,entry_status,entry_protocol in new_list:
+            entry_status = entry_status.upper()
+
+            if not entry_status == 'ALLOW' and not entry_status == 'BLOCK':
+                raise Exception("Blockage status shall be ALLOW or BLOCK")
+
             # convert protocols by name to numbers
             if not entry_protocol.isdigit():# Must be an name
                 entry_protocol = self.getProtocolNumber(entry_protocol.upper())
 
             if not entry_protocol: # passed value wasn't valid
-                continue
+                raise Exception("Protocol value shall be recognized name or integer value")
 
             regex_list.append((entry_time,entry_status,entry_protocol))
 
@@ -60,11 +65,10 @@ class networkLayer(baseClass):
         """ Performs check against a protocol. True if blocked """
         # RULE_LIST: (time,status,protocol)
         #               0   1       2
-        length = len(self.RULE_LIST)
 
-        for index in range(0,length):
-            if self.RULE_LIST[length-1-index][2] == proto_number:
-                if self.RULE_LIST[length-1-index][1] == 'BLOCK':
+        for index in range(0,len(self.RULE_LIST)):
+            if self.RULE_LIST[index][2] == proto_number:
+                if self.RULE_LIST[index][1] == 'BLOCK':
                     return True
                 else: # Latest entry allows to pass it
                     return False

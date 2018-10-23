@@ -17,7 +17,7 @@ class transportLayer(baseClass):
         try:
             return str(socket.getservbyname(service_name))
         except:
-            raise BaseException("Service not found. Use a well known service name.")
+            raise Exception("Service not found. Use a well known service name.")
 
     def get_service_by_port(self,port):
         """ Return service name for a port number"""
@@ -50,6 +50,11 @@ class transportLayer(baseClass):
         regex_list = []
 
         for entry_time,entry_status,entry_srcip,entry_srcport,entry_dstip,entry_dstport in new_list:
+            entry_status = entry_status.upper()
+
+            if not entry_status == 'ALLOW' and not entry_status == 'BLOCK':
+                raise Exception("Blockage status shall be ALLOW or BLOCK")
+
             # Convert all IPs
             entry_srcip = ip_to_regex(entry_srcip)
             entry_dstip = ip_to_regex(entry_dstip)
@@ -58,7 +63,7 @@ class transportLayer(baseClass):
                 entry_srcport =  port_to_regex(entry_srcport)
                 entry_dstport =  port_to_regex(entry_dstport)
             except:
-                raise BaseException("Service name used is not found in general list. Please check list provided by 'socket.getservbyname'")
+                raise Exception("Service name used is not found in general list. Please check list provided by 'socket.getservbyname'")
 
             regex_list.append((entry_time,entry_status,entry_srcip,entry_srcport,entry_dstip,entry_dstport))
 
@@ -105,14 +110,10 @@ class transportLayer(baseClass):
                     return True
             return False
 
-        length = len(self.RULE_LIST)
-
-        for index in range(0,length):
-            curr = length - 1 - index
-
-            if match_ip_and_port(self.RULE_LIST[curr][2:4],(srcip,srcport)):
-                if match_ip_and_port(self.RULE_LIST[curr][4:],(dstip,dstport)):
-                    if self.RULE_LIST[curr][1] == 'BLOCK':
+        for index in range(0,len(self.RULE_LIST)):
+            if match_ip_and_port(self.RULE_LIST[index][2:4],(srcip,srcport)):
+                if match_ip_and_port(self.RULE_LIST[index][4:],(dstip,dstport)):
+                    if self.RULE_LIST[index][1] == 'BLOCK':
                         return True
                     else: # Latest entry allows to pass it
                         return False

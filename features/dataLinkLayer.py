@@ -31,6 +31,11 @@ class dataLinkLayer(baseClass):
         regex_list = []
 
         for entry_time,entry_status,entry_src,entry_dst in new_list:
+            entry_status = entry_status.upper()
+
+            if not entry_status == 'ALLOW' and not entry_status == 'BLOCK':
+                raise Exception("Blockage status shall be ALLOW or BLOCK")
+
             # check if src is proper mac address if not convert to mac
             if not re.match(mac_verify_regex,entry_src,re.I):# Must be an interface name or regex
                 if entry_src != '*':
@@ -41,8 +46,10 @@ class dataLinkLayer(baseClass):
                 if entry_dst != '*':
                     entry_dst = self.getHardwareAddress(entry_dst)
 
-            if not entry_src or not entry_dst: #Maybe interface name's weren't valid
-                continue
+            if not entry_src: #Maybe interface name's weren't valid
+                raise Exception("Invalid source MAC address/interface")
+            if not entry_dst:
+                raise Exception("Invalid destination MAC address/interface")
 
             # Convert human understanable regex to machine understanable
             entry_src = entry_src.replace('*',mac_verify_regex)
@@ -67,12 +74,11 @@ class dataLinkLayer(baseClass):
         """ Performs regex check against a combination. True if blocked """
         # RULE_LIST: (time,status,src,dst)
         #               0   1       2   3
-        length = len(self.RULE_LIST)
 
-        for index in range(0,length):
-            if re.match(self.RULE_LIST[length-1-index][2], src, re.I|re.M): # src is present in our list
-                if re.match(self.RULE_LIST[length-1-index][3], dst, re.I|re.M): # dst is present in our list
-                    if self.RULE_LIST[length-1-index][1] == 'BLOCK':
+        for index in range(0,len(self.RULE_LIST)):
+            if re.match(self.RULE_LIST[index][2], src, re.I|re.M): # src is present in our list
+                if re.match(self.RULE_LIST[index][3], dst, re.I|re.M): # dst is present in our list
+                    if self.RULE_LIST[index][1] == 'BLOCK':
                         return True
                     else: # Latest entry allows to pass it
                         return False
@@ -80,5 +86,5 @@ class dataLinkLayer(baseClass):
 
 # For testing purpose
 # Intialize own object and provide it to global space
-TEST_LIST = [(0,'BLOCK','docker0','172.17.0.3')]
+TEST_LIST = [(0,'BLOCK','docker0','*')]
 dataLinkLayerObj = dataLinkLayer(TEST_LIST)

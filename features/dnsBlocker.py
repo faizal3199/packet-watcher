@@ -16,6 +16,11 @@ class dnsBlocker(baseClass):
         regex_list = []
 
         for entry_time,entry_status,entry_domain in new_list:
+            entry_status = entry_status.upper()
+
+            if not entry_status == 'ALLOW' and not entry_status == 'BLOCK':
+                raise Exception("Blockage status shall be ALLOW or BLOCK")
+
             # Make domain name satisfy FQDN pattern
             if not entry_domain.endswith('.'):
                 entry_domain = entry_domain + '.'
@@ -49,11 +54,10 @@ class dnsBlocker(baseClass):
         # As the list gets sorted when saved. The last entry will be the final answer decider
 
         # RULE_LIST: (time,status,domain)
-        length = len(self.RULE_LIST)
 
-        for index in range(0,length):
-            if re.match(self.RULE_LIST[length-1-index][2], domain, re.I|re.M) != None: # Domain is present in our list
-                if self.RULE_LIST[length-1-index][1] == 'BLOCK':
+        for index in range(0,len(self.RULE_LIST)):
+            if re.match(self.RULE_LIST[index][2], domain, re.I|re.M) != None: # Domain is present in our list
+                if self.RULE_LIST[index][1] == 'BLOCK':
                     return True
                 else: # Latest entry allows to pass it
                     return False
