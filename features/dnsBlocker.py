@@ -66,5 +66,5 @@ class dnsBlocker(baseClass):
 
 # For testing purpose
 # Intialize own object and provide it to global space
-TEST_LIST = [(0,'BLOCK','*.blockme.com')]
-dnsBlockerObj = dnsBlocker(TEST_LIST)
+# TEST_LIST = [(0,'BLOCK','*.blockme.com')]
+# dnsBlockerObj = dnsBlocker(TEST_LIST)

@@ -122,5 +122,5 @@ class transportLayer(baseClass):
 
 # For testing purpose
 # Intialize own object and provide it to global space
-TEST_LIST = [(0,'BLOCK','*','*','172.17.0.2','Domain')]
-transportLayerObj = transportLayer(TEST_LIST)
+# TEST_LIST = [(0,'BLOCK','*','*','172.17.0.2','Domain')]
+# transportLayerObj = transportLayer(TEST_LIST)

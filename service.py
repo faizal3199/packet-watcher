@@ -1,5 +1,6 @@
 from scapy.all import *
-import threading,ipcAPI,config,time
+from daemonize import Daemonize
+import threading,ipcAPI,config,time,logging
 
 class serviceProvider(object):
     """ Service handler class. Contains all objects """
@@ -8,22 +9,35 @@ class serviceProvider(object):
 
     def __init__(self):
         """ Init all objects and init handlers """
-        self.init_objects()
 
         self.services = [self.communication_handler]
         self.handlers = [self.handle_datalink,self.handle_networklayer,self.handle_transportlayer,self.handle_dns]
 
-    def start_sniffing(self):
-        """ Starts services and sniffing """
-        print("Starting service...")
+        self.daemonObj = Daemonize(app=config.APP_NAME, pid=config.PID_FILE, action=self.start_app_service)
+
+    def main(self):
+        """ Start the daemon service """
+        self.daemonObj.start()
+
+    def start_app_service(self):
+        """ Main function to handle everything """
+
+        self.init_logger() # logger in self.logger
+
+        self.init_objects()
+
+        self.logger.info("Starting service...")
         self.start_services()
 
-        print("Starting sniffer...")
+        self.start_sniffing()
+
+    def start_sniffing(self):
+        """ Starts sniffing """
+        self.logger.info("Starting sniffer...")
         try:
             sniff(iface='docker0',store=False,prn=self.packet_handler)
         except Exception as e:
-            print(e)
-        print("Exiting...")
+            self.logger.error(e)
 
     def start_services(self):
         for service in self.services:
@@ -35,6 +49,8 @@ class serviceProvider(object):
         cmd = conn.recv_data()
         feature = cmd['feature']
         args = cmd['args']
+
+        self.logger.debug("Recivied commands: {} {}".format(feature,args))
 
         if feature == 'service':
             if args[0] == 'stop':
@@ -69,6 +85,20 @@ class serviceProvider(object):
 
         self.serverObj.start_listening(self.unit_communication_handler)
 
+    def init_logger(self):
+        """ Creates logger object """
+        fmt = "[%(asctime)s] %(module)s : <%(levelname)s> %(message)s"
+
+        self.logger = logging.getLogger(config.APP_NAME)
+
+        tempHandler = logging.FileHandler(config.LOG_FILE, "a")
+        tempHandler.setLevel(logging.DEBUG)
+        formatHandler = logging.Formatter(fmt,datefmt='%Y-%m-%d %H:%M:%S')
+        tempHandler.setFormatter(formatHandler)
+
+        self.logger.addHandler(tempHandler)
+        # self.keep_fds = [self.logger.root.handlers[0].stream.fileno()]
+
     def init_objects(self):
         """ Init all objects in the objList"""
 
@@ -79,19 +109,19 @@ class serviceProvider(object):
 
         self.objList = {
         'dataLinkLayer':{
-                'obj': dataLinkLayer(),#[(0,'BLOCK','*','docker0')]),
+                'obj': dataLinkLayer([],self.logger),#[(0,'BLOCK','*','docker0')]),
                 'rules':[]
             },
         'networkLayer':{
-            'obj': networkLayer(),#[(0,'BLOCK','icmp')]),
+            'obj': networkLayer([],self.logger),#[(0,'BLOCK','icmp')]),
             'rules':[]
             },
         'transportLayer':{
-            'obj': transportLayer(),#[(0,'BLOCK','*','*','*','7596')]),
+            'obj': transportLayer([],self.logger),#[(0,'BLOCK','*','*','*','7596')]),
             'rules':[]
             },
         'dnsBlocker':{
-            'obj': dnsBlocker(),#[(0,'BLOCK','*.blockme.com')]),
+            'obj': dnsBlocker([],self.logger),#[(0,'BLOCK','*.blockme.com')]),
             'rules':[]
             },
         }
@@ -134,4 +164,4 @@ class serviceProvider(object):
 
 if __name__ == "__main__":
     serviceObj = serviceProvider()
-    serviceObj.start_sniffing()
+    serviceObj.start_app_service()
