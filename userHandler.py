@@ -75,14 +75,18 @@ class userHandler(object):
         import ipcAPI,config
 
         message = self.get_message(args)
-        client = ipcAPI.ipcClient(config.SOCKET_FILE)
+        try:
+            client = ipcAPI.ipcClient(config.SOCKET_FILE)
 
-        client.send_data(message)
+            client.send_data(message)
 
-        resp = client.recv_data()
+            resp = client.recv_data()
 
-        print("{} : {}".format(resp['status'],resp['message']))
-
+            print("{} : {}".format(resp['status'],resp['message']))
+        except:
+            print("Error while communicating with server")
+            return False
+        
         return True
 
 
