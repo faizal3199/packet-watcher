@@ -19,7 +19,7 @@ class baseIpcClass(object):
         try:
             data = self.encode(data)
         except:
-            raise BaseException("Invalid data type for encoding")
+            raise Exception("Invalid data type for encoding")
             return False
         try:
             # Put metadata of size ahead of the real data
@@ -28,7 +28,7 @@ class baseIpcClass(object):
             data = struct.pack('>I',len(data)) + data
             self.sockObj.send(data)
         except:
-            raise BaseException("Can't send data over conenction")
+            raise Exception("Can't send data over conenction")
             return False
 
         return True
@@ -41,19 +41,22 @@ class baseIpcClass(object):
         try:
             size = self.sockObj.recv(4) #Get metadata
         except:
-            raise BaseException("Error while receiving data. Probably broken pipe")
+            raise Exception("Error while receiving data. Probably broken pipe")
 
         if len(size) == 0:
-            raise BaseException("No data recivied. Probably broken pipe")
+            raise Exception("No data recivied. Probably broken pipe")
 
         size = struct.unpack('>I',size)[0]
 
         data = self.sockObj.recv(size)
 
         if len(data) != size:
-            raise BaseException("Partiala data recivied")
+            raise Exception("Partiala data recivied")
 
         return self.decode(data)
+
+    def close(self):
+        self.sockObj.close()
 
     def __delete__(self):
         self.sockObj.close()
@@ -71,7 +74,7 @@ class ipcServer(object):
                 os.unlink(self.serverAddress)
             self.sockObj.bind(self.serverAddress)
         except:
-            raise BaseException("Address already in use. {}".format(self.serverAddress))
+            raise Exception("Address already in use. {}".format(self.serverAddress))
 
     def start_listening(self,callback_function,client_count=1):
         """Blockin function. Callback function must accept baseIpcClass object.
@@ -90,6 +93,9 @@ class ipcServer(object):
     def __delete__(self):
         self.sockObj.close()
 
+    def close(self):
+        self.sockObj.close()
+
 class ipcClient(baseIpcClass):
     def __init__(self,sockFileName):
         """ Init a client socket"""
@@ -101,7 +107,7 @@ class ipcClient(baseIpcClass):
         try:
             self.sockObj.connect(self.serverAddress)
         except:
-            raise BaseException("Cann't connect to address")
+            raise Exception("Cann't connect to address")
 
     def __delete__(self):
         self.sockObj.close()
