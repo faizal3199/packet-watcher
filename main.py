@@ -7,7 +7,7 @@ def handle_service(args):
         print("Usage:")
         print("service [start|stop]")
         exit(1)
-    
+
     if args[0] == 'start':
         if os.path.exists(config.PID_FILE):
             print("The service is already running. Check PID file at {}".format(config.PID_FILE))
@@ -36,8 +36,8 @@ if __name__=='__main__':
     args = sys.argv[1:]
     userHandlerObj = userHandler()
 
-    if len(args) < 1 :
-        userHandlerObj.print_help("Insufficient number of arguments")
+    if len(args) < 1 or (len(args) >=1 and args[0] == 'help'):
+        userHandlerObj.print_help("Help docs...")
         print('service [start|stop]')
         exit(1)
 
