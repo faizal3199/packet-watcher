@@ -30,6 +30,7 @@ class dnsBlocker(baseClass):
             entry_domain = entry_domain.replace('.','\.')
             entry_domain = '^' + entry_domain + '$' #Add start and end of line to prevent matched in substring
 
+            self.logger.info("New rule added: ({}, {})".format(entry_status,entry_domain))
             regex_list.append((entry_time,entry_status,entry_domain))
 
         return regex_list
@@ -44,7 +45,7 @@ class dnsBlocker(baseClass):
             # self.logger("Got DNS query: {}".format(queried_domain))
 
             if self.is_blocked(queried_domain):
-                self.logger('Found blocked domain: {}'.format(queried_domain))
+                self.logger.warning('Found blocked domain: {}'.format(queried_domain))
                 return True
         return False
 

@@ -55,6 +55,7 @@ class dataLinkLayer(baseClass):
             entry_src = entry_src.replace('*',mac_verify_regex)
             entry_dst = entry_dst.replace('*',mac_verify_regex)
 
+            self.logger.info("New rule added: ({}, {}, {})".format(entry_status,entry_src,entry_dst))
             regex_list.append((entry_time,entry_status,entry_src,entry_dst))
 
         return regex_list
@@ -66,7 +67,7 @@ class dataLinkLayer(baseClass):
         hw_addr_dst = packet.getlayer('Ether').dst
 
         if self.is_blocked(hw_addr_src,hw_addr_dst):
-            self.logger('Found blocked dataLinkLayer packet: {} to {}'.format(hw_addr_src,hw_addr_dst))
+            self.logger.warning('Found blocked dataLinkLayer packet: {} to {}'.format(hw_addr_src,hw_addr_dst))
             return True
         return False
 

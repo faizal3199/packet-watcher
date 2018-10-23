@@ -45,6 +45,7 @@ class networkLayer(baseClass):
             if not entry_protocol: # passed value wasn't valid
                 raise Exception("Protocol value shall be recognized name or integer value")
 
+            self.logger.info("New rule added: ({}, {})".format(entry_status,entry_protocol))
             regex_list.append((entry_time,entry_status,entry_protocol))
 
         return regex_list
@@ -57,7 +58,7 @@ class networkLayer(baseClass):
         proto_number = packet.proto
 
         if self.is_blocked(proto_number):
-            self.logger('Found blocked protocol {}: {} to {}'.format(self.getProtocolName(proto_number),packet.src,packet.dst))
+            self.logger.warning('Found blocked protocol {}: {} to {}'.format(self.getProtocolName(proto_number),packet.src,packet.dst))
             return True
         return False
 
