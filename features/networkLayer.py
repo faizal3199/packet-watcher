@@ -45,7 +45,7 @@ class networkLayer(baseClass):
             if not entry_protocol: # passed value wasn't valid
                 raise Exception("Protocol value shall be recognized name or integer value")
 
-            self.logger.info("New rule added: ({}, {})".format(entry_status,entry_protocol))
+            self.logger.debug("New rule added: ({}, {})".format(entry_status,entry_protocol))
             regex_list.append((entry_time,entry_status,entry_protocol))
 
         return regex_list

@@ -55,7 +55,7 @@ class dataLinkLayer(baseClass):
             entry_src = entry_src.replace('*',mac_verify_regex)
             entry_dst = entry_dst.replace('*',mac_verify_regex)
 
-            self.logger.info("New rule added: ({}, {}, {})".format(entry_status,entry_src,entry_dst))
+            self.logger.debug("New rule added: ({}, {}, {})".format(entry_status,entry_src,entry_dst))
             regex_list.append((entry_time,entry_status,entry_src,entry_dst))
 
         return regex_list

@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import sys,os,time
 from userHandler import userHandler
 import config,ipcAPI

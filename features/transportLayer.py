@@ -65,7 +65,7 @@ class transportLayer(baseClass):
             except:
                 raise Exception("Service name used is not found in general list. Please check list provided by 'socket.getservbyname'")
 
-            self.logger.info("New rule added: ({}, {}, {}, {}, {})".format(entry_status,entry_srcip,entry_srcport,entry_dstip,entry_dstport))
+            self.logger.debug("New rule added: ({}, {}, {}, {}, {})".format(entry_status,entry_srcip,entry_srcport,entry_dstip,entry_dstport))
             regex_list.append((entry_time,entry_status,entry_srcip,entry_srcport,entry_dstip,entry_dstport))
 
         return regex_list

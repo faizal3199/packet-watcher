@@ -30,7 +30,7 @@ class dnsBlocker(baseClass):
             entry_domain = entry_domain.replace('.','\.')
             entry_domain = '^' + entry_domain + '$' #Add start and end of line to prevent matched in substring
 
-            self.logger.info("New rule added: ({}, {})".format(entry_status,entry_domain))
+            self.logger.debug("New rule added: ({}, {})".format(entry_status,entry_domain))
             regex_list.append((entry_time,entry_status,entry_domain))
 
         return regex_list
