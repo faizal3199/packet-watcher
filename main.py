@@ -49,14 +49,16 @@ def handle_service(args):
         else:
             import service
             serviceObj = service.serviceProvider()
+            print("Starting service...")
             serviceObj.main()
-            print("Service started")
+
     elif args[0] == "stop":
         if not os.path.exists(config.PID_FILE):
             print("The service is not running. Check PID file at {}".format(config.PID_FILE))
             exit(1)
         else:
             kill_service(config.PID_FILE)
+            print("Service stoped")
             # client = ipcAPI.ipcClient(config.SOCKET_FILE)
             # client.send_data({'feature':'service','args':('stop')})
             #

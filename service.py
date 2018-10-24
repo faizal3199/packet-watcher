@@ -27,6 +27,11 @@ class coloredLogs(logging.Formatter):
             'CRITICAL': YELLOW,
             'ERROR': RED
         }
+
+        self.EXTRA_COLORS = {
+            'CYAN':'\e[36m',
+            'LIGHT_CYAN':'\e[96m'
+        }
         # self.logging.Formatter.setLevel(self.logging.DEBUG)
 
     def format(self, record):
@@ -35,6 +40,10 @@ class coloredLogs(logging.Formatter):
         if self.use_color and levelname in self.COLORS:
             levelname_color = self.COLOR_SEQ % (30 + self.COLORS[levelname]) + levelname + self.RESET_SEQ
             record.levelname = levelname_color
+
+        # if self.use_color:
+        #     asctime_color = self.EXTRA_COLORS['CYAN'] + record.asctime + self.RESET_SEQ
+        #     record.asctime = asctime_color
 
         return super().format(record)
 
@@ -123,17 +132,13 @@ class serviceProvider(object):
 
     def init_logger(self):
         """ Creates logger object """
-        import coloredlogs
-
-        coloredlogs.install()
-
-        fmt = "[%(asctime)s] \033[1m%(module)s\033[0m (%(levelname)s)\t: %(message)s"
+        fmt = "[\033[36m%(asctime)s\033[0m] [%(levelname)s] \033[1m%(module)s\033[0m \t: %(message)s"
 
         self.logger = logging.getLogger(config.APP_NAME)
 
         tempHandler = logging.FileHandler(config.LOG_FILE, "a")
         tempHandler.setLevel(logging.DEBUG)
-        formatHandler = coloredLogs(fmt,datefmt='%Y-%m-%d %H:%M:%S')
+        formatHandler = coloredLogs(fmt,datefmt='%H:%M:%S')
         tempHandler.setFormatter(formatHandler)
 
         self.logger.addHandler(tempHandler)
