@@ -71,7 +71,7 @@ class serviceProvider(object):
         """ Starts sniffing """
         self.logger.info("Starting sniffer...")
         try:
-            sniff(iface='docker0',store=False,prn=self.packet_handler)
+            sniff(store=False,prn=self.packet_handler)
         except Exception as e:
             self.logger.error(e)
 
@@ -127,7 +127,7 @@ class serviceProvider(object):
 
         coloredlogs.install()
 
-        fmt = "[%(asctime)s] \033[1m%(module)s\033[0m (%(levelname)s)\t\t: %(message)s"
+        fmt = "[%(asctime)s] \033[1m%(module)s\033[0m (%(levelname)s)\t: %(message)s"
 
         self.logger = logging.getLogger(config.APP_NAME)
 
