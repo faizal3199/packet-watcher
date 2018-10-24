@@ -50,6 +50,7 @@ def handle_service(args):
             import service
             serviceObj = service.serviceProvider()
             serviceObj.main()
+            print("Service started")
     elif args[0] == "stop":
         if not os.path.exists(config.PID_FILE):
             print("The service is not running. Check PID file at {}".format(config.PID_FILE))
@@ -67,7 +68,7 @@ def handle_service(args):
         exit(1)
 
 if __name__=='__main__':
-    print('{} {}'.format(config.APP_NAME,config.APP_VERSION))
+    print('{} {}\n'.format(config.APP_NAME,config.APP_VERSION))
 
     args = sys.argv[1:]
     userHandlerObj = userHandler()
