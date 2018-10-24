@@ -26,7 +26,7 @@ class dnsBlocker(baseClass):
                 entry_domain = entry_domain + '.'
 
             # Convert human understanable regex to machine understanable
-            entry_domain = entry_domain.replace('*','[\w-]*')
+            entry_domain = entry_domain.replace('*','[\w\-.]*')# . will be handled by next replace
             entry_domain = entry_domain.replace('.','\.')
             entry_domain = '^' + entry_domain + '$' #Add start and end of line to prevent matched in substring
 
