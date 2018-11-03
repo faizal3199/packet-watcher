@@ -3,5 +3,5 @@
 Watches for packet over network which violates specified rules.
 
 * Runs as Daemon
-* Logs data under file `/var/run/custom_firewall.log`
+* Logs data under file `/var/log/custom_firewall.log`
 * Rules changeable at runtime
